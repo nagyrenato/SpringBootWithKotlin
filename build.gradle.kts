@@ -40,6 +40,9 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("io.kotlintest:kotlintest-runner-junit5:3.4.2")
+	testImplementation("io.mockk:mockk:1.13.2")
+	testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 	detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.22.0-RC3")
 }
 
