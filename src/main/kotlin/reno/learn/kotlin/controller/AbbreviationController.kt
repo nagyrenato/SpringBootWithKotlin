@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import reno.learn.kotlin.exception.AbbreviationNotFoundException
 import reno.learn.kotlin.model.database.Abbreviation
 import reno.learn.kotlin.model.rest.request.SaveAbbreviationRequest
 import reno.learn.kotlin.model.rest.response.AbbreviationDetailsResponse
@@ -26,8 +25,7 @@ class AbbreviationController(@Autowired var abbreviationService: AbbreviationSer
 
     @GetMapping("/abbreviations/{id}")
     fun retrieveDetails(@PathVariable("id") id: String): AbbreviationDetailsResponse {
-        var serviceResult: Abbreviation =
-            abbreviationService.retrieveDetails(id) ?: throw AbbreviationNotFoundException()
+        var serviceResult: Abbreviation = abbreviationService.retrieveDetails(id)
         return AbbreviationDetailsResponse(
             shortForm = serviceResult.shortForm,
             meaning = serviceResult.meaning,
