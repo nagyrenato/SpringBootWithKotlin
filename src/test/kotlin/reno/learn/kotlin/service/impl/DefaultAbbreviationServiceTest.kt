@@ -112,8 +112,8 @@ internal class DefaultAbbreviationServiceTest : BehaviorSpec({
         }
 
         When("the service is being called for saving") {
-            val slot1 = slot<Abbreviation>()
-            every { abbreviationRepository.save(capture(slot1)) } returns mockk()
+            val abbreviationCapture = slot<Abbreviation>()
+            every { abbreviationRepository.save(capture(abbreviationCapture)) } returns mockk()
 
             Then("it returns a list of possible meanings") {
                 val saveRequest: SaveAbbreviationRequest = SaveAbbreviationRequest(
@@ -123,7 +123,7 @@ internal class DefaultAbbreviationServiceTest : BehaviorSpec({
                 )
 
                 abbreviationService.saveAbbreviation(saveRequest)
-                slot1.captured.shortForm shouldBe "TC"
+                abbreviationCapture.captured.shortForm shouldBe "TC"
             }
         }
     }
