@@ -12,11 +12,13 @@ import reno.learn.kotlin.repository.AbbreviationRepository
 import reno.learn.kotlin.service.AbbreviationService
 
 @Service
-class DefaultAbbreviationService(@Autowired val abbreviationRepository: AbbreviationRepository) : AbbreviationService {
+class DefaultAbbreviationService(
+    @Autowired private val abbreviationRepository: AbbreviationRepository
+) : AbbreviationService {
 
     override fun retrieveMeaning(shortForm: String): Collection<String> {
         if (shortForm.isNullOrBlank()) {
-            return emptyList()
+            throw InvalidRequestException()
         }
         return abbreviationRepository.findByShortForm(shortForm).map { result -> result.meaning }
     }

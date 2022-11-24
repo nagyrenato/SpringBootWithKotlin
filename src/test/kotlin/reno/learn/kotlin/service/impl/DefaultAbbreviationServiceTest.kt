@@ -8,7 +8,6 @@ import io.mockk.mockk
 import io.mockk.slot
 import org.bson.types.ObjectId
 import org.junit.Assert.assertThrows
-import org.junit.jupiter.api.Test
 import org.springframework.data.repository.findByIdOrNull
 import reno.learn.kotlin.exception.InvalidRequestException
 import reno.learn.kotlin.model.database.Abbreviation
@@ -71,15 +70,17 @@ internal class DefaultAbbreviationServiceTest : BehaviorSpec({
 
         When("the service is being called for meanings but the short form is empty") {
             Then("it returns a list of possible meanings") {
-                var result = abbreviationService.retrieveMeaning("")
-                result.size shouldBe 0
+                assertThrows(InvalidRequestException::class.java) {
+                    abbreviationService.retrieveMeaning("")
+                }
             }
         }
 
         When("the service is being called for meanings but the short form is blank") {
             Then("it returns a list of possible meanings") {
-                var result = abbreviationService.retrieveMeaning(" ")
-                result.size shouldBe 0
+                assertThrows(InvalidRequestException::class.java) {
+                    abbreviationService.retrieveMeaning("")
+                }
             }
         }
 
@@ -96,7 +97,7 @@ internal class DefaultAbbreviationServiceTest : BehaviorSpec({
         }
 
         When("the service is being called for details but the id is empty") {
-            Then("it returns a list of possible meanings") {
+            Then("it throws an exception") {
                 assertThrows(InvalidRequestException::class.java) {
                     abbreviationService.retrieveDetails("")
                 }
@@ -104,9 +105,9 @@ internal class DefaultAbbreviationServiceTest : BehaviorSpec({
         }
 
         When("the service is being called for details but the id is blank") {
-            Then("it returns a list of possible meanings") {
+            Then("it throws an exception") {
                 assertThrows(InvalidRequestException::class.java) {
-                    abbreviationService.retrieveDetails("")
+                    abbreviationService.retrieveDetails(" ")
                 }
             }
         }
@@ -115,31 +116,88 @@ internal class DefaultAbbreviationServiceTest : BehaviorSpec({
             val abbreviationCapture = slot<Abbreviation>()
             every { abbreviationRepository.save(capture(abbreviationCapture)) } returns mockk()
 
-            Then("it returns a list of possible meanings") {
-                val saveRequest: SaveAbbreviationRequest = SaveAbbreviationRequest(
-                    shortForm = "TC",
-                    meaning = "Test Case",
-                    description = null
-                )
-
+            Then("it calls the repository to save the abbreviation") {
+                val saveRequest: SaveAbbreviationRequest = generateDefaultSaveAbbreviationRequest()
                 abbreviationService.saveAbbreviation(saveRequest)
                 abbreviationCapture.captured.shortForm shouldBe "TC"
+                abbreviationCapture.captured.meaning shouldBe "Test Case"
+                abbreviationCapture.captured.description shouldBe "Test Description"
+            }
+        }
+
+        When("the service is being called for saving but the short form is empty") {
+            Then("it throws an exception") {
+                val saveRequest: SaveAbbreviationRequest = generateDefaultSaveAbbreviationRequest(shortForm = "")
+                assertThrows(InvalidRequestException::class.java) {
+                    abbreviationService.saveAbbreviation(saveRequest)
+                }
+            }
+        }
+
+        When("the service is being called for saving but the short form is blank") {
+            Then("it throws an exception") {
+                val saveRequest: SaveAbbreviationRequest = generateDefaultSaveAbbreviationRequest(shortForm = " ")
+                assertThrows(InvalidRequestException::class.java) {
+                    abbreviationService.saveAbbreviation(saveRequest)
+                }
+            }
+        }
+
+        When("the service is being called for saving but the meaning is empty") {
+            Then("it throws an exception") {
+                val saveRequest: SaveAbbreviationRequest = generateDefaultSaveAbbreviationRequest(meaning = "")
+                assertThrows(InvalidRequestException::class.java) {
+                    abbreviationService.saveAbbreviation(saveRequest)
+                }
+            }
+        }
+
+        When("the service is being called for saving but the meaning is blank") {
+            Then("it throws an exception") {
+                val saveRequest: SaveAbbreviationRequest = generateDefaultSaveAbbreviationRequest(meaning = " ")
+                assertThrows(InvalidRequestException::class.java) {
+                    abbreviationService.saveAbbreviation(saveRequest)
+                }
+            }
+        }
+
+        When("the service is being called for deleting") {
+            val objectIdCapture = slot<ObjectId>()
+            every { abbreviationRepository.deleteById(capture(objectIdCapture)) } returns mockk()
+
+            Then("it calls the repository to delete the abbreviation") {
+                val id: String = testCaseId
+                abbreviationService.deleteAbbreviation(testCaseId)
+                objectIdCapture.captured shouldBe ObjectId(testCaseId)
+            }
+        }
+
+        When("the service is being called for deleting but the id is empty") {
+            Then("it calls the repository to delete the abbreviation") {
+                assertThrows(InvalidRequestException::class.java) {
+                    abbreviationService.deleteAbbreviation("")
+                }
+            }
+        }
+
+        When("the service is being called for deleting but the id is blank") {
+            Then("it calls the repository to delete the abbreviation") {
+                assertThrows(InvalidRequestException::class.java) {
+                    abbreviationService.deleteAbbreviation(" ")
+                }
             }
         }
     }
-
-    @Test
-    fun saveAbbreviation() {
-        // TODO("Unimplemented test case")
-    }
-
-    @Test
-    fun deleteAbbreviation() {
-        // TODO("Unimplemented test case")
-    }
-
-    @Test
-    fun getAbbreviationRepository() {
-        // TODO("Unimplemented test case")
-    }
 })
+
+private fun generateDefaultSaveAbbreviationRequest(
+    shortForm: String = "TC",
+    meaning: String = "Test Case",
+    description: String = "Test Description"
+): SaveAbbreviationRequest {
+    return SaveAbbreviationRequest(
+        shortForm = shortForm,
+        meaning = meaning,
+        description = description
+    )
+}
