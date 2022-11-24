@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class EmbeddedMongoConfig {
 
+    // TODO("This must go to the test")
+
     init {
         val mongodbExecutable: MongodExecutable
         val ip = "localhost"

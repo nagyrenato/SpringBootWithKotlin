@@ -28,10 +28,10 @@ class StartupLogger {
             .distinctBy { it }
             .sortedBy { it }
             .toList()
-            .forEach { it ->
+            .forEach {
                 try {
                     logger.info("$it=${env.getProperty(it)}")
-                } catch (e: Exception) {
+                } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
                     logger.warn("$it -> ${e.message}")
                 }
             }
