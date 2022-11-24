@@ -6,6 +6,7 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.22.0-RC3"
     kotlin("jvm") version "1.7.21"
     kotlin("plugin.spring") version "1.7.21"
+    jacoco
 }
 
 group = "reno.learn"
@@ -55,4 +56,9 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnit()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
 }
