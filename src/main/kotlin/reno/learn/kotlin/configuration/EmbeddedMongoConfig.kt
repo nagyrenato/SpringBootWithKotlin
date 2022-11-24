@@ -16,6 +16,8 @@ class EmbeddedMongoConfig {
     init {
         val mongodbExecutable: MongodExecutable
         val ip = "localhost"
+
+        @Suppress("MagicNumber")
         val port = 27017
         val mongodbConfig = MongodConfig
             .builder()
