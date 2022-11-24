@@ -5,7 +5,7 @@ import io.kotlintest.shouldBe
 import io.kotlintest.specs.BehaviorSpec
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.slot
 import org.bson.types.ObjectId
 import org.junit.Assert.assertThrows
 import org.junit.jupiter.api.Test
@@ -112,8 +112,8 @@ internal class DefaultAbbreviationServiceTest : BehaviorSpec({
         }
 
         When("the service is being called for saving") {
-            every { abbreviationRepository.save(any()) } returns
-                mockk()
+            val slot1 = slot<Abbreviation>()
+            every { abbreviationRepository.save(capture(slot1)) } returns mockk()
 
             Then("it returns a list of possible meanings") {
                 val saveRequest: SaveAbbreviationRequest = SaveAbbreviationRequest(
@@ -123,8 +123,7 @@ internal class DefaultAbbreviationServiceTest : BehaviorSpec({
                 )
 
                 abbreviationService.saveAbbreviation(saveRequest)
-
-                verify { abbreviationRepository.save(any()) }
+                slot1.captured.shortForm shouldBe "TC"
             }
         }
     }
