@@ -35,7 +35,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
-    implementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo:3.5.1")
+    implementation("io.springfox:springfox-swagger-ui:3.0.0")
+    implementation("io.springfox:springfox-swagger2:3.0.0")
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.13")
+    implementation("org.springdoc:springdoc-openapi-data-rest:1.6.13")
+    implementation("org.springdoc:springdoc-openapi-kotlin:1.6.13")
     /*
     The project uses JUnit4 due to the following issue:
     https://github.com/gradle/gradle/issues/6453
@@ -44,6 +48,7 @@ dependencies {
     testImplementation("io.kotlintest:kotlintest-runner-junit4:3.4.2")
     testImplementation("io.mockk:mockk:1.13.2")
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.testcontainers:mongodb:1.17.6")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.22.0-RC3")
 }
 
@@ -54,11 +59,43 @@ tasks.withType<KotlinCompile> {
     }
 }
 
-tasks.withType<Test> {
-    useJUnit()
-    finalizedBy(tasks.jacocoTestReport)
+val ignoredPaths: Iterable<String> = listOf(
+    "reno/learn/kotlin/KotlinExampleApplication*"
+)
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
 }
 
+tasks.jacocoTestReport {
+    reports {
+        xml.required.set(true)
+        csv.required.set(true)
+    }
+    classDirectories.setFrom(
+        sourceSets.main.get().output.asFileTree.matching {
+            exclude(ignoredPaths)
+        }
+    )
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.8".toBigDecimal()
+            }
+        }
+    }
+    mustRunAfter(tasks["jacocoTestReport"])
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
 tasks.jacocoTestReport {
     dependsOn(tasks.test) // tests are required to run before generating the report
 }

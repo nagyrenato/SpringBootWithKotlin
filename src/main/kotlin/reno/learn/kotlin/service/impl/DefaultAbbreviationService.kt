@@ -17,7 +17,7 @@ class DefaultAbbreviationService(
 ) : AbbreviationService {
 
     override fun retrieveMeaning(shortForm: String): Collection<String> {
-        if (shortForm.isNullOrBlank()) {
+        if (shortForm.isBlank()) {
             throw InvalidRequestException()
         }
         return abbreviationRepository.findByShortForm(shortForm).map { result -> result.meaning }
@@ -29,7 +29,7 @@ class DefaultAbbreviationService(
     }
 
     override fun saveAbbreviation(saveAbbreviationRequest: SaveAbbreviationRequest) {
-        if (saveAbbreviationRequest.shortForm.isNullOrBlank() || saveAbbreviationRequest.meaning.isNullOrBlank()) {
+        if (saveAbbreviationRequest.shortForm.isBlank() || saveAbbreviationRequest.meaning.isBlank()) {
             throw InvalidRequestException()
         }
 
@@ -47,7 +47,7 @@ class DefaultAbbreviationService(
     }
 
     fun String.validateAsId() {
-        if (this.isNullOrBlank()) {
+        if (this.isBlank()) {
             throw InvalidRequestException()
         }
     }
