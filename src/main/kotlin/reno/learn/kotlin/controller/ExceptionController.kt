@@ -1,5 +1,6 @@
 package reno.learn.kotlin.controller
 
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -12,12 +13,15 @@ import javax.servlet.http.HttpServletRequest
 @ControllerAdvice
 class ExceptionController {
 
+    private val logger = KotlinLogging.logger {}
+
     @ExceptionHandler(AbbreviationNotFoundException::class)
     @Suppress("UnusedPrivateMember")
     fun handleAbbreviationNotFoundException(
         servletRequest: HttpServletRequest,
         exception: Exception
     ): ResponseEntity<String> {
+        logger.warn { exception.message }
         return ResponseEntity("Abbreviation not found", HttpStatus.NOT_FOUND)
     }
 
@@ -27,6 +31,7 @@ class ExceptionController {
         servletRequest: HttpServletRequest,
         exception: Exception
     ): ResponseEntity<String> {
+        logger.warn { exception.message }
         return ResponseEntity("Unable to delete abbreviation", HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
@@ -36,6 +41,7 @@ class ExceptionController {
         servletRequest: HttpServletRequest,
         exception: Exception
     ): ResponseEntity<String> {
+        logger.warn { exception.message }
         return ResponseEntity("Invalid request", HttpStatus.BAD_REQUEST)
     }
 
@@ -45,6 +51,7 @@ class ExceptionController {
         servletRequest: HttpServletRequest,
         exception: Exception
     ): ResponseEntity<String> {
+        logger.warn { exception.message }
         return ResponseEntity("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

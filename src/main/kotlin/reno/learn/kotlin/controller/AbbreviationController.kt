@@ -1,11 +1,9 @@
 package reno.learn.kotlin.controller
 
-
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
 import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
-
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -25,17 +23,29 @@ import reno.learn.kotlin.service.AbbreviationService
 class AbbreviationController(@Autowired private var abbreviationService: AbbreviationService) {
 
     @ApiOperation(value = "retrieveMeaning", nickname = "retrieveMeaning")
-    @ApiResponses(value = [
-        ApiResponse(code = 500, message = "Server error"),
-        ApiResponse(code = 200, message = "Successful retrieval",
-            response = Collection::class, responseContainer = "List")])
+    @ApiResponses(
+        value = [
+            ApiResponse(code = 500, message = "Server error"),
+            ApiResponse(
+                code = 200,
+                message = "Successful retrieval",
+                response = Collection::class,
+                responseContainer = "List"
+            )
+        ]
+    )
     @GetMapping("/abbreviations")
-    fun retrieveMeaning(@RequestParam("value") value: String): Collection<String> {
+    fun retrieveMeaning(@RequestParam(name = "shortForm", required = true) value: String): Collection<String> {
         return abbreviationService.retrieveMeaning(value)
     }
 
     @GetMapping("/abbreviations/{id}")
-    fun retrieveDetails(@ApiParam(value = "id") @PathVariable("id") id: String): AbbreviationDetailsResponse {
+    fun retrieveDetails(
+        @ApiParam(value = "id")
+        @PathVariable("id")
+        id: String
+    ):
+    AbbreviationDetailsResponse {
         var serviceResult: Abbreviation = abbreviationService.retrieveDetails(id)
         return AbbreviationDetailsResponse(
             shortForm = serviceResult.shortForm,

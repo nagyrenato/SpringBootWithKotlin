@@ -46,6 +46,7 @@ dependencies {
      */
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.kotlintest:kotlintest-runner-junit4:3.4.2")
+    testImplementation("io.kotest:kotest-extensions-spring:4.4.3")
     testImplementation("io.mockk:mockk:1.13.2")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.testcontainers:mongodb:1.17.6")
@@ -64,6 +65,7 @@ val ignoredPaths: Iterable<String> = listOf(
 )
 
 tasks.test {
+    useJUnit()
     finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
 }
 tasks.jacocoTestReport {
