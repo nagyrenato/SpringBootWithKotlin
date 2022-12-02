@@ -32,7 +32,7 @@ class SwaggerConfig : WebMvcConfigurer {
     private fun getApiInfo(): ApiInfo {
         val contact = Contact("Renato Nagy", "https://github.com/nagyrenato", "nagy.renato@hotmail.com")
         return ApiInfoBuilder()
-            .title("Example Api Title")
+            .title("Abbreviation Service")
             .description("Example Api Definition")
             .version("1.0.0")
             .license("Apache 2.0")
