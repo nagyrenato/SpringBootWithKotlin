@@ -21,7 +21,8 @@ import reno.learn.kotlin.model.database.Abbreviation
 import reno.learn.kotlin.model.rest.request.SaveAbbreviationRequest
 import reno.learn.kotlin.model.rest.response.AbbreviationDetailsResponse
 import reno.learn.kotlin.service.AbbreviationService
-import javax.validation.constraints.NotBlank
+import javax.validation.Valid
+import javax.validation.constraints.NotEmpty
 
 @RestController
 @RequestMapping("/api/v1")
@@ -42,7 +43,8 @@ class AbbreviationController(@Autowired private var abbreviationService: Abbrevi
     )
     @GetMapping("/abbreviations", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun retrieveMeaning(
-        @NotBlank
+        @NotEmpty
+        @Valid
         @RequestParam(name = "shortForm", required = true)
         value: String
     ):

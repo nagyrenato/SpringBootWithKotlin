@@ -101,7 +101,7 @@ internal class AbbreviationControllerTest {
 
         mockMvc.perform(
             MockMvcRequestBuilders
-                .get("/api/v1/abbreviations")
+                .get("/api/v1/abbreviations?shortForm=")
                 .accept(MediaType.ALL)
                 .contentType(MediaType.APPLICATION_JSON)
         )

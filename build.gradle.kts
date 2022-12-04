@@ -30,6 +30,13 @@ detekt {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter") {}
     implementation("org.springframework.boot:spring-boot-starter-web")
+    /*
+        Annotations like
+        import javax.validation.Valid
+        import javax.validation.constraints.NotEmpty
+        requires this dependency, without it the project will build and run but the validation won't happen
+     */
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.data:spring-data-mongodb")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
