@@ -17,12 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
-import reno.learn.kotlin.model.database.Abbreviation
 import reno.learn.kotlin.model.rest.request.SaveAbbreviationRequest
 import reno.learn.kotlin.model.rest.response.AbbreviationDetailsResponse
 import reno.learn.kotlin.service.AbbreviationService
 import javax.validation.Valid
-import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.NotBlank
 
 @RestController
 @RequestMapping("/api/v1")
@@ -43,7 +42,7 @@ class AbbreviationController(@Autowired private var abbreviationService: Abbrevi
     )
     @GetMapping("/abbreviations", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun retrieveMeaning(
-        @NotEmpty
+        @NotBlank
         @Valid
         @RequestParam(name = "shortForm", required = true)
         value: String
@@ -65,6 +64,8 @@ class AbbreviationController(@Autowired private var abbreviationService: Abbrevi
     )
     @GetMapping("/abbreviations/{id}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun retrieveDetails(
+        @NotBlank
+        @Valid
         @ApiParam(value = "id")
         @PathVariable(
             "id",
@@ -73,15 +74,10 @@ class AbbreviationController(@Autowired private var abbreviationService: Abbrevi
         id: String
     ):
         AbbreviationDetailsResponse {
-        var serviceResult: Abbreviation = abbreviationService.retrieveDetails(id)
-        return AbbreviationDetailsResponse(
-            shortForm = serviceResult.shortForm,
-            meaning = serviceResult.meaning,
-            description = serviceResult.description
-        )
+        return abbreviationService.retrieveDetails(id)
     }
 
-    @ApiOperation(value = "Save abbreviation", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Save abbreviation")
     @ApiResponses(
         value = [
             ApiResponse(
@@ -91,7 +87,7 @@ class AbbreviationController(@Autowired private var abbreviationService: Abbrevi
             ApiResponse(code = 500, message = "Server error"),
         ]
     )
-    @PostMapping("/abbreviations", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping("/abbreviations")
     @ResponseStatus(HttpStatus.CREATED)
     fun saveAbbreviation(@RequestBody saveAbbreviationRequest: SaveAbbreviationRequest) {
         return abbreviationService.saveAbbreviation(saveAbbreviationRequest)

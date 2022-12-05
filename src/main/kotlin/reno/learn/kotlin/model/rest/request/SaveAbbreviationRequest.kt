@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(description = "Model for saving an abbreviation.")
 data class SaveAbbreviationRequest(
-
     @field:Schema(
         description = "The short form for the abbreviation",
         example = "SB",

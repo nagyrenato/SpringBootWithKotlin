@@ -3,6 +3,7 @@ package reno.learn.kotlin.controller
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -55,6 +56,19 @@ class ExceptionController {
     ): ResponseEntity<String> {
         logger.warn { exception.message }
         return ResponseEntity(exception.message, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    @Suppress("UnusedPrivateMember")
+    fun handleHttpMessageNotReadableException(
+        servletRequest: HttpServletRequest,
+        exception: Exception
+    ): ResponseEntity<String> {
+        logger.warn { exception.message }
+        return ResponseEntity(
+            "Invalid body, please refer the documentation at /swagger-ui/index.html#/",
+            HttpStatus.BAD_REQUEST
+        )
     }
 
     @ExceptionHandler(Exception::class)

@@ -8,6 +8,7 @@ import reno.learn.kotlin.exception.AbbreviationNotFoundException
 import reno.learn.kotlin.exception.InvalidRequestException
 import reno.learn.kotlin.model.database.Abbreviation
 import reno.learn.kotlin.model.rest.request.SaveAbbreviationRequest
+import reno.learn.kotlin.model.rest.response.AbbreviationDetailsResponse
 import reno.learn.kotlin.repository.AbbreviationRepository
 import reno.learn.kotlin.service.AbbreviationService
 
@@ -23,9 +24,18 @@ class DefaultAbbreviationService(
         return abbreviationRepository.findByShortForm(shortForm).map { result -> result.meaning }
     }
 
-    override fun retrieveDetails(id: String): Abbreviation {
+    override fun retrieveDetails(id: String): AbbreviationDetailsResponse {
         id.validateAsId()
-        return abbreviationRepository.findByIdOrNull(ObjectId(id)) ?: throw AbbreviationNotFoundException()
+        val result = abbreviationRepository.findByIdOrNull(ObjectId(id))
+        return if (result != null) {
+            AbbreviationDetailsResponse(
+                shortForm = result.shortForm,
+                meaning = result.meaning,
+                description = result.description
+            )
+        } else {
+            throw AbbreviationNotFoundException()
+        }
     }
 
     override fun saveAbbreviation(saveAbbreviationRequest: SaveAbbreviationRequest) {

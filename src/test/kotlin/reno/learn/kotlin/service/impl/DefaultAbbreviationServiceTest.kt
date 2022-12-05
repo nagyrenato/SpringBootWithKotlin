@@ -27,7 +27,6 @@ internal class DefaultAbbreviationServiceTest : BehaviorSpec({
 
     val expectedShortForm = "RM"
     val expectedMeaning1 = "Resource Manager"
-    val expectedObjectIdHex = "637b7957b3139e78227fe186"
     val expectedDescription = "Manager who is responsible for resources"
 
     val expectedMeaning2 = "Royal Military"
@@ -90,7 +89,6 @@ internal class DefaultAbbreviationServiceTest : BehaviorSpec({
                 Abbreviation(ObjectId(resultObjectIdHex1), resultShortForm1, resultMeaning1, resultDescription)
             var result = abbreviationService.retrieveDetails(testCaseId)
             Then("it returns a list of possible meanings") {
-                result.id shouldBe ObjectId(expectedObjectIdHex)
                 result.shortForm shouldBe expectedShortForm
                 result.meaning shouldBe expectedMeaning1
                 result.description shouldBe expectedDescription

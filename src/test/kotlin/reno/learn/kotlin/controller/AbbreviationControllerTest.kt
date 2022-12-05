@@ -14,6 +14,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import reno.learn.kotlin.exception.AbbreviationNotFoundException
+import reno.learn.kotlin.model.rest.request.SaveAbbreviationRequest
+import reno.learn.kotlin.model.rest.response.AbbreviationDetailsResponse
 import reno.learn.kotlin.service.AbbreviationService
 import org.mockito.Mockito.`when` as mockitoWhen
 
@@ -25,6 +28,18 @@ import org.mockito.Mockito.`when` as mockitoWhen
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 internal class AbbreviationControllerTest {
+
+    /*
+        Static variables
+        https://www.baeldung.com/kotlin/companion-object
+     */
+    companion object {
+        const val API_V1_BASE = "/api/v1/abbreviations"
+        const val MEANING_1 = "Resource Manager"
+        const val MEANING_2 = "Royal Military"
+        const val SHORT_FORM_1 = "RM"
+        const val TEST_CASE_ID = "637b7957b3139e78227fe188"
+    }
 
     @Autowired
     private lateinit var webApplicationContext: WebApplicationContext
@@ -50,12 +65,12 @@ internal class AbbreviationControllerTest {
 
     @Test
     fun testRetrieveMeaningOneResult() {
-        val serviceResponse = listOf("Resource Manager", "Royal Military")
-        mockitoWhen(abbreviationService.retrieveMeaning("RM")).thenReturn(serviceResponse)
+        val serviceResponse = listOf(MEANING_1)
+        mockitoWhen(abbreviationService.retrieveMeaning(SHORT_FORM_1)).thenReturn(serviceResponse)
         val expectedContent = objectMapper.writeValueAsString(serviceResponse)
         mockMvc.perform(
             MockMvcRequestBuilders
-                .get("/api/v1/abbreviations?shortForm=RM")
+                .get("$API_V1_BASE?shortForm=RM")
                 .accept(MediaType.ALL)
                 .contentType(MediaType.APPLICATION_JSON)
         )
@@ -66,12 +81,12 @@ internal class AbbreviationControllerTest {
 
     @Test
     fun testRetrieveMeaningMultipleResult() {
-        val serviceResponse = listOf("Resource Manager", "Royal Military")
-        mockitoWhen(abbreviationService.retrieveMeaning("RM")).thenReturn(serviceResponse)
+        val serviceResponse = listOf(MEANING_1, MEANING_2)
+        mockitoWhen(abbreviationService.retrieveMeaning(SHORT_FORM_1)).thenReturn(serviceResponse)
         val expectedContent = objectMapper.writeValueAsString(serviceResponse)
         mockMvc.perform(
             MockMvcRequestBuilders
-                .get("/api/v1/abbreviations?shortForm=RM")
+                .get("$API_V1_BASE?shortForm=RM")
                 .accept(MediaType.ALL)
                 .contentType(MediaType.APPLICATION_JSON)
         )
@@ -83,12 +98,12 @@ internal class AbbreviationControllerTest {
     @Test
     fun testRetrieveMeaningNoResult() {
         val serviceResponse = listOf<String>()
-        mockitoWhen(abbreviationService.retrieveMeaning("RM")).thenReturn(serviceResponse)
+        mockitoWhen(abbreviationService.retrieveMeaning(SHORT_FORM_1)).thenReturn(serviceResponse)
         val expectedContent = objectMapper.writeValueAsString(serviceResponse)
 
         mockMvc.perform(
             MockMvcRequestBuilders
-                .get("/api/v1/abbreviations?shortForm=RM")
+                .get("$API_V1_BASE?shortForm=RM")
                 .accept(MediaType.ALL)
                 .contentType(MediaType.APPLICATION_JSON)
         )
@@ -98,23 +113,36 @@ internal class AbbreviationControllerTest {
     }
 
     @Test
-    fun testRetrieveMeaningForInvalidInput() {
+    fun testRetrieveMeaningForEmptyInput() {
         mockMvc.perform(
             MockMvcRequestBuilders
-                .get("/api/v1/abbreviations?shortForm=")
+                .get("$API_V1_BASE?shortForm=")
                 .accept(MediaType.ALL)
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(MockMvcResultMatchers.content().contentType("text/plain;charset=UTF-8"))
-            .andExpect(MockMvcResultMatchers.content().string("retrieveMeaning.value: must not be empty"))
+            .andExpect(MockMvcResultMatchers.content().string("retrieveMeaning.value: must not be blank"))
+    }
+
+    @Test
+    fun testRetrieveMeaningForBlankInput() {
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("$API_V1_BASE?shortForm=")
+                .accept(MediaType.ALL)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.content().contentType("text/plain;charset=UTF-8"))
+            .andExpect(MockMvcResultMatchers.content().string("retrieveMeaning.value: must not be blank"))
     }
 
     @Test
     fun testRetrieveMeaningForMissingInput() {
         mockMvc.perform(
             MockMvcRequestBuilders
-                .get("/api/v1/abbreviations")
+                .get(API_V1_BASE)
                 .accept(MediaType.ALL)
                 .contentType(MediaType.APPLICATION_JSON)
         )
@@ -125,6 +153,175 @@ internal class AbbreviationControllerTest {
                     .string(
                         "Required request parameter 'shortForm' " +
                             "for method parameter type String is not present"
+                    )
+            )
+    }
+
+    @Test
+    fun testRetrieveDetails() {
+        val serviceResponse = AbbreviationDetailsResponse("RM", "Resource Manager", "Resource Manager Description")
+        mockitoWhen(abbreviationService.retrieveDetails(TEST_CASE_ID)).thenReturn(serviceResponse)
+        val expectedContent = objectMapper.writeValueAsString(serviceResponse)
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("$API_V1_BASE/$TEST_CASE_ID")
+                .accept(MediaType.ALL)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.content().json(expectedContent))
+    }
+
+    @Test
+    fun testRetrieveDetailsNotFound() {
+        mockitoWhen(
+            abbreviationService.retrieveDetails(TEST_CASE_ID)
+        ).thenThrow(AbbreviationNotFoundException::class.java)
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("$API_V1_BASE/$TEST_CASE_ID")
+                .accept(MediaType.ALL)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().isNotFound)
+            .andExpect(MockMvcResultMatchers.content().contentType("text/plain;charset=UTF-8"))
+            .andExpect(MockMvcResultMatchers.content().string("Abbreviation not found"))
+    }
+
+    @Test
+    fun testRetrieveDetailsInvalidInput() {
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("$API_V1_BASE/ ")
+                .accept(MediaType.ALL)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.content().contentType("text/plain;charset=UTF-8"))
+            .andExpect(MockMvcResultMatchers.content().string("retrieveDetails.id: must not be blank"))
+    }
+
+    /*
+        By default, mocking a method without a return type does not require any additional setup, just let it go.
+        Modify this behaviour if you want to throw an exception or something like this.
+        https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#do_family_methods_stubs
+     */
+    @Test
+    fun testSave() {
+        val saveAbbreviationRequest = SaveAbbreviationRequest("TC", "Test Case", "Test Case Description")
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("$API_V1_BASE")
+                .accept(MediaType.ALL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(saveAbbreviationRequest))
+        )
+            .andExpect(MockMvcResultMatchers.status().isCreated)
+    }
+
+    @Test
+    fun testSaveWithInvalidBodyThatHasNoShortFormAndMeaning() {
+        /*
+            As SaveAbbreviationRequest is safe you cannot create an instance of it without shortForm or meaning
+            But you can create a similar object
+            Reference:
+            https://kotlinlang.org/docs/object-declarations.html#creating-anonymous-objects-from-scratch
+         */
+
+        val saveAbbreviationRequest = object {
+            val test = "Test"
+
+            // object expressions extend Any, so `override` is required on `toString()`
+            override fun toString() = "$test"
+        }
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("$API_V1_BASE")
+                .accept(MediaType.ALL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(saveAbbreviationRequest))
+        )
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.content().contentType("text/plain;charset=UTF-8"))
+            .andExpect(
+                MockMvcResultMatchers
+                    .content()
+                    .string(
+                        "Invalid body, please refer the " +
+                            "documentation at /swagger-ui/index.html#/"
+                    )
+            )
+    }
+
+    @Test
+    fun testSaveWithInvalidBodyThatHasNoShortForm() {
+        /*
+            As SaveAbbreviationRequest is safe you cannot create an instance of it without shortForm or meaning
+            But you can create a similar object
+            Reference:
+            https://kotlinlang.org/docs/object-declarations.html#creating-anonymous-objects-from-scratch
+         */
+
+        val saveAbbreviationRequest = object {
+            val meaning: String = "TC"
+
+            // object expressions extend Any, so `override` is required on `toString()`
+            override fun toString() = "$meaning"
+        }
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("$API_V1_BASE")
+                .accept(MediaType.ALL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(saveAbbreviationRequest))
+        )
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.content().contentType("text/plain;charset=UTF-8"))
+            .andExpect(
+                MockMvcResultMatchers
+                    .content()
+                    .string(
+                        "Invalid body, please refer the " +
+                            "documentation at /swagger-ui/index.html#/"
+                    )
+            )
+    }
+
+    @Test
+    fun testSaveWithInvalidBodyThatHasNoMeaning() {
+        /*
+            As SaveAbbreviationRequest is safe you cannot create an instance of it without shortForm or meaning
+            But you can create a similar object
+            Reference:
+            https://kotlinlang.org/docs/object-declarations.html#creating-anonymous-objects-from-scratch
+         */
+
+        val saveAbbreviationRequest = object {
+            val shortForm: String = "TC"
+
+            // object expressions extend Any, so `override` is required on `toString()`
+            override fun toString() = "$shortForm"
+        }
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("$API_V1_BASE")
+                .accept(MediaType.ALL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(saveAbbreviationRequest))
+        )
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.content().contentType("text/plain;charset=UTF-8"))
+            .andExpect(
+                MockMvcResultMatchers
+                    .content()
+                    .string(
+                        "Invalid body, please refer the " +
+                            "documentation at /swagger-ui/index.html#/"
                     )
             )
     }
