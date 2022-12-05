@@ -208,7 +208,7 @@ internal class AbbreviationControllerTest {
         https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#do_family_methods_stubs
      */
     @Test
-    fun testSave() {
+    fun testSaveAbbreviation() {
         val saveAbbreviationRequest = SaveAbbreviationRequest("TC", "Test Case", "Test Case Description")
 
         mockMvc.perform(
@@ -324,5 +324,29 @@ internal class AbbreviationControllerTest {
                             "documentation at /swagger-ui/index.html#/"
                     )
             )
+    }
+
+    @Test
+    fun testDeleteAbbreviation() {
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .delete("$API_V1_BASE/$TEST_CASE_ID")
+                .accept(MediaType.ALL)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().isNoContent)
+    }
+
+    @Test
+    fun testDeleteAbbreviationInvalidInput() {
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .delete("$API_V1_BASE/ ")
+                .accept(MediaType.ALL)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.content().contentType("text/plain;charset=UTF-8"))
+            .andExpect(MockMvcResultMatchers.content().string("deleteAbbreviation.id: must not be blank"))
     }
 }

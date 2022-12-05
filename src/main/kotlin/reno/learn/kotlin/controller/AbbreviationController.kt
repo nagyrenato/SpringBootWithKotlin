@@ -105,7 +105,16 @@ class AbbreviationController(@Autowired private var abbreviationService: Abbrevi
     )
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/abbreviations/{id}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun deleteAbbreviation(@PathVariable("id", required = true) id: String) {
+    fun deleteAbbreviation(
+        @NotBlank
+        @Valid
+        @ApiParam(value = "id")
+        @PathVariable(
+            "id",
+            required = true
+        )
+        id: String
+    ) {
         return abbreviationService.deleteAbbreviation(id)
     }
 }
