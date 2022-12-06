@@ -1,7 +1,7 @@
 package reno.learn.kotlin.model.rest.response
 
 class AbbreviationDetailsResponse(
-    var shortForm: String,
-    var meaning: String,
-    var description: String? = "No additional description is provided"
+    val shortForm: String,
+    val meaning: String,
+    val description: String? = "No additional description is provided"
 )

@@ -3,7 +3,7 @@ package reno.learn.kotlin.model.database
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-import java.time.LocalDateTime
+import java.time.Instant
 
 @Document
 data class Abbreviation(
@@ -13,6 +13,5 @@ data class Abbreviation(
     val shortForm: String,
     val meaning: String,
     val description: String? = null,
-    val createdDate: LocalDateTime = LocalDateTime.now(),
-    val modifiedDate: LocalDateTime = LocalDateTime.now()
+    val createdDate: Long = Instant.now().epochSecond
 )

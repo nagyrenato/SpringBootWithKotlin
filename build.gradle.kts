@@ -54,6 +54,8 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.kotlintest:kotlintest-runner-junit4:3.4.2")
     testImplementation("io.kotest:kotest-extensions-spring:4.4.3")
+    testImplementation("org.mockito:mockito-core:4.9.0")
+    testImplementation("org.mockito:mockito-inline:4.9.0")
     testImplementation("io.mockk:mockk:1.13.2")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.testcontainers:mongodb:1.17.6")
