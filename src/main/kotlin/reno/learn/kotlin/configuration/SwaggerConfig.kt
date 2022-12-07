@@ -33,7 +33,7 @@ class SwaggerConfig : WebMvcConfigurer {
         val contact = Contact("Renato Nagy", "https://github.com/nagyrenato", "nagy.renato@hotmail.com")
         return ApiInfoBuilder()
             .title("Abbreviation Service")
-            .description("Example Api Definition")
+            .description("Abbreviation Service to save abbreviations to a database")
             .version("1.0.0")
             .license("Apache 2.0")
             .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0")
