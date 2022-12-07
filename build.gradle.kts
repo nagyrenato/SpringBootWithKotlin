@@ -6,6 +6,11 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.22.0-RC3"
     kotlin("jvm") version "1.7.21"
     kotlin("plugin.spring") version "1.7.21"
+    /*
+        Jacoco is extremely helpful for example, a lot of time it turned out
+        I can use val instead of var in the constructor parameter, and it was shown in the
+        Jacoco report as the setters were not covered.
+     */
     jacoco
 }
 

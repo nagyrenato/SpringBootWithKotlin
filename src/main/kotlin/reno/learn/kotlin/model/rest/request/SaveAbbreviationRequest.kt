@@ -10,14 +10,14 @@ data class SaveAbbreviationRequest(
         type = "string",
         required = true
     )
-    var shortForm: String,
+    val shortForm: String,
     @field:Schema(
         description = "The meaning of the abbreviation",
         example = "Spring Boot",
         type = "string",
         required = true
     )
-    var meaning: String,
+    val meaning: String,
     @field:Schema(
         description = "The description of the abbreviation",
         example =
@@ -26,5 +26,5 @@ data class SaveAbbreviationRequest(
         type = "string",
         required = false
     )
-    var description: String?
+    val description: String?
 )
