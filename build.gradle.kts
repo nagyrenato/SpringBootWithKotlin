@@ -48,8 +48,8 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-data-rest:1.6.13")
     implementation("org.springdoc:springdoc-openapi-kotlin:1.6.13")
     /*
-    The project uses JUnit4 due to the following issue:
-    https://github.com/gradle/gradle/issues/6453
+        The project uses JUnit4 due to the following issue:
+        https://github.com/gradle/gradle/issues/6453
      */
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.kotlintest:kotlintest-runner-junit4:3.4.2")
@@ -59,6 +59,9 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.2")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.testcontainers:mongodb:1.17.6")
+    /*
+        Plugins
+     */
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.22.0-RC3")
 }
 
