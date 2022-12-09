@@ -63,11 +63,22 @@ dependencies {
     testImplementation("org.mockito:mockito-inline:4.9.0")
     testImplementation("io.mockk:mockk:1.13.2")
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:mongodb:1.17.6")
+    /*
+        Vulnerabilities at this moment but there's no newer version
+     */
+    testImplementation("io.rest-assured:spring-mock-mvc:5.3.0")
     /*
         Plugins
      */
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.22.0-RC3")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.22.0")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.testcontainers:testcontainers-bom:1.17.6")
+    }
 }
 
 tasks.withType<KotlinCompile> {
