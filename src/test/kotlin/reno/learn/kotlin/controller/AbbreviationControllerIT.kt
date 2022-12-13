@@ -1,8 +1,10 @@
 package reno.learn.kotlin.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.restassured.module.mockmvc.RestAssuredMockMvc
 import org.junit.Before
 import org.junit.Test
+import org.junit.jupiter.api.Order
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -30,6 +32,8 @@ class AbbreviationControllerIT {
 
     @Autowired
     private lateinit var webApplicationContext: WebApplicationContext
+
+    private val objectMapper = ObjectMapper()
 
     companion object {
         const val API_V1_BASE = "/api/v1/abbreviations"
@@ -62,15 +66,31 @@ class AbbreviationControllerIT {
     }
 
     @Test
-    fun testRetrieveMeaningOneResult() {
+    @Order(1)
+    fun testSaveAbbreviation() {
+        val saveAbbreviationRequest = SaveAbbreviationRequest("TC", "Test Case", "Test Case Description")
         mockMvc.perform(
             MockMvcRequestBuilders
-                .get("$API_V1_BASE?shortForm=RM")
+                .post("${AbbreviationControllerTest.API_V1_BASE}")
+                .accept(MediaType.ALL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(saveAbbreviationRequest))
+        )
+            .andExpect(MockMvcResultMatchers.status().isCreated)
+    }
+
+    @Test
+    @Order(2)
+    fun testRetrieveMeaningOneResult() {
+        val expectedContent = objectMapper.writeValueAsString(listOf("Test Case"))
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("$API_V1_BASE?shortForm=TC")
                 .accept(MediaType.ALL)
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.content().json("[]"))
+            .andExpect(MockMvcResultMatchers.content().json(expectedContent))
     }
 }
