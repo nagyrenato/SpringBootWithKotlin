@@ -213,7 +213,7 @@ internal class AbbreviationControllerTest {
 
         mockMvc.perform(
             MockMvcRequestBuilders
-                .post("$API_V1_BASE")
+                .post(API_V1_BASE)
                 .accept(MediaType.ALL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(saveAbbreviationRequest))
@@ -234,12 +234,12 @@ internal class AbbreviationControllerTest {
             val test = "Test"
 
             // object expressions extend Any, so `override` is required on `toString()`
-            override fun toString() = "$test"
+            override fun toString() = test
         }
 
         mockMvc.perform(
             MockMvcRequestBuilders
-                .post("$API_V1_BASE")
+                .post(API_V1_BASE)
                 .accept(MediaType.ALL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(saveAbbreviationRequest))
@@ -269,12 +269,12 @@ internal class AbbreviationControllerTest {
             val meaning: String = "TC"
 
             // object expressions extend Any, so `override` is required on `toString()`
-            override fun toString() = "$meaning"
+            override fun toString() = meaning
         }
 
         mockMvc.perform(
             MockMvcRequestBuilders
-                .post("$API_V1_BASE")
+                .post(API_V1_BASE)
                 .accept(MediaType.ALL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(saveAbbreviationRequest))
@@ -304,12 +304,12 @@ internal class AbbreviationControllerTest {
             val shortForm: String = "TC"
 
             // object expressions extend Any, so `override` is required on `toString()`
-            override fun toString() = "$shortForm"
+            override fun toString() = shortForm
         }
 
         mockMvc.perform(
             MockMvcRequestBuilders
-                .post("$API_V1_BASE")
+                .post(API_V1_BASE)
                 .accept(MediaType.ALL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(saveAbbreviationRequest))
